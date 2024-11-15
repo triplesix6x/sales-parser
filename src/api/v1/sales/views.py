@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from core.config import settings
-from core.models import db_helper
+from core.models import db_helper, redis_helper
+from redis import Redis
 from .schemas import SaleRead, SaleCreate, SaleDelete, SaleUpdate
 from . import crud
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,13 +17,14 @@ router = APIRouter(
 # GET
 # --------------------------------
 
-
 @router.get("/", response_model=list[SaleRead])
 async def get_sales(
-        session: Annotated[AsyncSession, Depends(db_helper.session_dependency)]):
+        session: Annotated[AsyncSession, Depends(db_helper.session_dependency)],
+        redis: Redis = Depends(redis_helper.get_redis)):
 
     sales = await crud.get_all_sales(
-        session=session)
+        session=session,
+        redis=redis)
 
     return sales
 
@@ -43,10 +45,11 @@ async def get_sale(
 async def get_sale_report_by_date(
         sale: SaleRead = Depends(get_sale_by_date)):
     return sale.report
+
+
 # --------------------------------
 # POST
 # --------------------------------
-
 
 @router.post("/", response_model=SaleRead, status_code=status.HTTP_201_CREATED)
 async def create_sale(
@@ -64,7 +67,6 @@ async def create_sale(
 # PATCH
 # --------------------------------
 
-
 @router.patch("/{sale_id}/", response_model=SaleRead)
 async def update_sale(
         sale_update: SaleUpdate,
@@ -80,7 +82,6 @@ async def update_sale(
 # --------------------------------
 # DELETE
 # --------------------------------
-
 
 @router.delete("/{sale_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_sale(

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from core.config import settings
-from core.models import db_helper
+from core.models import db_helper, redis_helper
+from redis import Redis
 from .schemas import ProductRead, ProductCreate, ProductDelete, ProductUpdate
 from . import crud
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,13 +17,14 @@ router = APIRouter(
 # GET
 # --------------------------------
 
-
 @router.get("/", response_model=list[ProductRead])
 async def get_products(
-        session: Annotated[AsyncSession, Depends(db_helper.session_dependency)]):
+        session: Annotated[AsyncSession, Depends(db_helper.session_dependency)],
+        redis: Redis = Depends(redis_helper.get_redis)):
 
     products = await crud.get_all_products(
-        session=session)
+        session=session,
+        redis=redis)
 
     return products
 
@@ -49,7 +51,6 @@ async def get_products_by_sale_id(
 # POST
 # --------------------------------
 
-
 @router.post("/", response_model=ProductRead, status_code=status.HTTP_201_CREATED)
 async def create_product(
         product_create: ProductCreate,
@@ -66,7 +67,6 @@ async def create_product(
 # PATCH
 # --------------------------------
 
-
 @router.patch("/{product_id}/", response_model=ProductRead)
 async def update_product(
         product_update: ProductUpdate,
@@ -82,7 +82,6 @@ async def update_product(
 # --------------------------------
 # DELETE
 # --------------------------------
-
 
 @router.delete("/{product_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_sale(

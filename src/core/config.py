@@ -1,4 +1,4 @@
-from pydantic import BaseModel, PostgresDsn
+from pydantic import BaseModel, PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pythonjsonlogger import jsonlogger
 import logging
@@ -35,6 +35,10 @@ class DatabaseConfig(BaseModel):
         "pk": "pk_%(table_name)s"}
 
 
+class RedisConfig(BaseModel):
+    url: RedisDsn
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         case_sensitive=False,
@@ -44,6 +48,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api_prefix: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
+    redis: RedisConfig
 
 
 settings = Settings()

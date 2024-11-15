@@ -4,7 +4,7 @@ import uvicorn
 from core.config import settings
 from api.v1 import router as api_v1_router
 from contextlib import asynccontextmanager
-from core.models import db_helper
+from core.models import db_helper, redis_helper
 from prometheus_fastapi_instrumentator import Instrumentator
 
 
@@ -16,6 +16,7 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     await db_helper.dispose()
+    redis_helper.disconnect_from_redis()
 
 
 app = FastAPI(

@@ -102,6 +102,17 @@ services:
     networks:
       - app_network
 
+  redis:
+    image: redis:alpine
+    container_name: redis_container
+    ports:
+      - "5379:5379"
+    command: "redis-server --port 5379"
+    depends_on:
+      - api
+    networks:
+      - app_network
+
 volumes:
   grafana_data:
   prometheus_data:
