@@ -1,0 +1,42 @@
+version: 1
+disable_existing_loggers: false
+formatters:
+  json:
+    class: core.config.UvicornJSONAccessFormatter
+    format: '%(levelname)s %(asctime)s %(message)s'
+  console: 
+    datefmt: '%d/%m/%Y %H:%M:%S'
+    format: '%(levelname)8s | %(asctime)s.%(msecs)03d | %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: console
+    stream: ext://sys.stdout
+
+  logstash:
+    class: logstash_async.handler.AsynchronousLogstashHandler
+    host: logstash
+    port: 5000
+    ssl_enable: False
+    database_path: ''
+    formatter: json
+loggers:
+  uvicorn:
+    level: INFO
+    handlers: [console, logstash]
+    propagate: no
+
+  uvicorn.error:
+    level: ERROR
+    handlers: [console, logstash]
+    propagate: no
+
+  uvicorn.access:
+    level: INFO
+    handlers: [console, logstash]
+    propagate: no
+
+root:
+  level: INFO
+  handlers: [console, logstash]
+
