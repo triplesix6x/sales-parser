@@ -5,6 +5,7 @@ from core.config import settings
 from api.v1 import router as api_v1_router
 from contextlib import asynccontextmanager
 from core.models import db_helper
+from prometheus_fastapi_instrumentator import Instrumentator
 
 
 @asynccontextmanager
@@ -20,6 +21,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     default_response_class=ORJSONResponse)
 app.include_router(api_v1_router)
+
+
+Instrumentator().instrument(app).expose(app)
 
 
 def main():
