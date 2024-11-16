@@ -8,7 +8,8 @@ class SaleBase(BaseModel):
 
 
 class SaleCreate(SaleBase):
-    pass
+    date: _date
+    report: str | None = None
 
 
 class SaleDelete(SaleBase):
@@ -19,6 +20,7 @@ class SaleRead(SaleBase):
     model_config = ConfigDict(
         from_attributes=True)
     id: int
+    report: str | None = None
 
 
 class SaleUpdate(SaleBase):

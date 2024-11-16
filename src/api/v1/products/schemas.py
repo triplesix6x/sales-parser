@@ -11,7 +11,11 @@ class ProductBase(BaseModel):
 
 
 class ProductCreate(ProductBase):
-    pass
+    name: str
+    quantity: int
+    price: Decimal
+    category: str
+    sale_id: int | None = None
 
 
 class ProductDelete(ProductBase):
@@ -22,6 +26,7 @@ class ProductRead(ProductBase):
     model_config = ConfigDict(
         from_attributes=True)
     id: int
+    sale_id: int | None = None
 
 
 class ProductUpdate(ProductBase):

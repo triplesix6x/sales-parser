@@ -113,6 +113,44 @@ services:
     networks:
       - app_network
 
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq_container
+    ports:
+      - "5671:5672"      
+      - "15671:15672"    
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - app_network
+
+  celery_worker:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: celery_worker
+    command: celery -A core.celery.celery_app worker --loglevel=info --logfile=-
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+    networks:
+      - app_network
+
+  celery_beat:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: celery_beat
+    command: celery -A core.celery.celery_app beat --loglevel=info --logfile=-
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+    networks:
+      - app_network
+
 volumes:
   grafana_data:
   prometheus_data:

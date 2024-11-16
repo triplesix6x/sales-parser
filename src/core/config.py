@@ -39,6 +39,19 @@ class RedisConfig(BaseModel):
     url: RedisDsn
 
 
+class RabbitMQConfig(BaseModel):
+    brocker: str
+    backend: str
+
+
+class OpenAIConfig(BaseModel):
+    api: str
+
+
+class XMLConfig(BaseModel):
+    url: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         case_sensitive=False,
@@ -49,6 +62,9 @@ class Settings(BaseSettings):
     api_prefix: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     redis: RedisConfig
+    rabbitmq: RabbitMQConfig
+    openai: OpenAIConfig
+    xml: XMLConfig
 
 
 settings = Settings()
@@ -56,15 +72,19 @@ settings = Settings()
 
 class UvicornJSONAccessFormatter(jsonlogger.JsonFormatter):
     def format(self, record: logging.LogRecord) -> str:
-        recordcopy = copy(record)
-        client_addr, method, full_path, http_version, status_code = recordcopy.args
-        recordcopy.__dict__.update(
-            {
-                "client_addr": client_addr,
-                "method": method,
-                "full_path": full_path,
-                "http_version": http_version,
-                "status_code": status_code,
-            }
-        )
-        return super().format(record=recordcopy)
+        try:
+            recordcopy = copy(record)
+            client_addr, method, full_path, http_version, status_code = recordcopy.args
+            recordcopy.__dict__.update(
+                {
+                    "client_addr": client_addr,
+                    "method": method,
+                    "full_path": full_path,
+                    "http_version": http_version,
+                    "status_code": status_code,
+                }
+            )
+            return super().format(record=recordcopy)
+        except ValueError:
+            recordcopy = copy(record)
+            return super().format(record=recordcopy)
