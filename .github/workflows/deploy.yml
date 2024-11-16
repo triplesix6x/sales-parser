@@ -24,6 +24,17 @@ jobs:
         echo "FASTAPI_XML_URL=${{ secrets.FASTAPI_XML_URL }}" >> .env
         cp .env src/.env
 
+    - name: Copy .env files to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        source: |
+          .env
+          src/.env
+        target: deploy
+
     - name: Deploy to Server
       uses: appleboy/ssh-action@v0.1.6
       with:
