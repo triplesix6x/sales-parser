@@ -39,7 +39,7 @@ jobs:
           docker-compose down
           docker-compose up --build -d
   test:
-    runs-on: ubunti-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
