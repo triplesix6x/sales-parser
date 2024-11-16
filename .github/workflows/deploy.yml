@@ -30,9 +30,13 @@ jobs:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
+        port: 22
         script: |
           set -e
-          cd deploy
+          cd ${{ secrets.DEPLOY_PATH }}
+          if [ ! -d ".git" ]; then
+            git clone git@github.com:triplesix6x/sales-parser.git .
+          fi
           git pull origin main
           cp $GITHUB_WORKSPACE/.env .env
           cp $GITHUB_WORKSPACE/src/.env src/.env
