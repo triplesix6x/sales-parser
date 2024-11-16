@@ -6,27 +6,6 @@ on:
       - main
 
 jobs:
-  test:
-    runs-on: ubunti-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Create .env file
-      run: |
-        echo "FASTAPI_DB_URL=${{ secrets.FASTAPI_DB_URL }}" >> .env
-        echo "FASTAPI_REDIS_URL=${{ secrets.FASTAPI_REDIS_URL }}" >> .env
-        echo "FASTAPI_RABBITMQ_BROCKER=${{ secrets.FASTAPI_RABBITMQ_BROCKER }}" >> .env
-        echo "FASTAPI_RABBITMQ_BACKEND=${{ secrets.FASTAPI_RABBITMQ_BACKEND }}" >> .env
-        echo "FASTAPI_OPENAI_API=${{ secrets.FASTAPI_OPENAI_API }}" >> .env
-        echo "FASTAPI_XML_URL=${{ secrets.FASTAPI_XML_URL }}" >> .env
-        cp .env src/.env
-
-    - name: Run Tests
-      run: |
-        pytest -v
-
   deploy:
     runs-on: ubuntu-latest
 
@@ -58,4 +37,24 @@ jobs:
           cp $GITHUB_WORKSPACE/src/.env src/.env
           docker-compose down
           docker-compose up --build -d
+  test:
+    runs-on: ubunti-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Create .env file
+      run: |
+        echo "FASTAPI_DB_URL=${{ secrets.FASTAPI_DB_URL }}" >> .env
+        echo "FASTAPI_REDIS_URL=${{ secrets.FASTAPI_REDIS_URL }}" >> .env
+        echo "FASTAPI_RABBITMQ_BROCKER=${{ secrets.FASTAPI_RABBITMQ_BROCKER }}" >> .env
+        echo "FASTAPI_RABBITMQ_BACKEND=${{ secrets.FASTAPI_RABBITMQ_BACKEND }}" >> .env
+        echo "FASTAPI_OPENAI_API=${{ secrets.FASTAPI_OPENAI_API }}" >> .env
+        echo "FASTAPI_XML_URL=${{ secrets.FASTAPI_XML_URL }}" >> .env
+        cp .env src/.env
+
+    - name: Run Tests
+      run: |
+        pytest -v
 
