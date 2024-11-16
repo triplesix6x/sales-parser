@@ -24,17 +24,7 @@ jobs:
         echo "FASTAPI_XML_URL=${{ secrets.FASTAPI_XML_URL }}" >> .env
         cp .env src/.env
 
-    - name: Copy .env files to server
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}
-        source: |
-          .env
-          src/.env
-        target: deploy
-
+    
     - name: Deploy to Server
       uses: appleboy/ssh-action@v0.1.6
       with:
@@ -49,8 +39,13 @@ jobs:
             git clone git@github.com:triplesix6x/sales-parser.git .
           fi
           git pull origin main
-          cp $GITHUB_WORKSPACE/.env .env
-          cp $GITHUB_WORKSPACE/src/.env src/.env
+          echo "FASTAPI_DB_URL=${{ secrets.FASTAPI_DB_URL }}" >> .env
+          echo "FASTAPI_REDIS_URL=${{ secrets.FASTAPI_REDIS_URL }}" >> .env
+          echo "FASTAPI_RABBITMQ_BROCKER=${{ secrets.FASTAPI_RABBITMQ_BROCKER }}" >> .env
+          echo "FASTAPI_RABBITMQ_BACKEND=${{ secrets.FASTAPI_RABBITMQ_BACKEND }}" >> .env
+          echo "FASTAPI_OPENAI_API=${{ secrets.FASTAPI_OPENAI_API }}" >> .env
+          echo "FASTAPI_XML_URL=${{ secrets.FASTAPI_XML_URL }}" >> .env
+          cp .env src/.env
           docker-compose down
           docker-compose up --build -d
   test:
