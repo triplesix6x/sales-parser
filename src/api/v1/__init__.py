@@ -10,4 +10,4 @@ router.include_router(products_router)
 
 @router.get("/")
 async def get_api():
-    return {"message": "Тестовое задание для ООО 'Алмазгеобур'"}
+    return {"message": "Тест"}
